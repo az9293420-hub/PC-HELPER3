@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PS Helper — Конфигуратор ПК и мастерские по России</title>
+<style>
+* { box-sizing: border-box; }
+body { background: #0b0f0b; color: #d8e8c8; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, sans-serif; }
+.container { max-width: 1150px; margin: 0 auto; }
+.header { display: flex; align-items: center; justify-content: space-between; background: #14201a; padding: 16px 22px; border-radius: 14px; border: 1px solid #2a3a2a; margin-bottom: 18px; flex-wrap: wrap; gap: 8px; }
+.logo { font-size: 1.9em; font-weight: 800; color: #d8e8c8; }
+.logo span { color: #b8ff4f; text-shadow: 0 0 12px rgba(184,255,79,.5); }
+.header .sub { color: #7a9a6a; font-size: .95em; }
+.ai-banner { background: linear-gradient(90deg, #22331c, #2c4422); border: 1px solid #4a6a3a; color: #d8ff9a; padding: 14px 18px; border-radius: 12px; margin-bottom: 18px; font-size: 1.05em; }
+section { background: #121a14; border: 1px solid #22301e; border-radius: 14px; padding: 20px; margin-bottom: 20px; }
+h2 { color: #b8ff4f; margin-top: 0; }
+h3 { color: #c9ff8a; }
+.tab { padding: 10px 16px; background: #1c2a1c; border: 1px solid #3a4a32; color: #d8e8c8; border-radius: 9px; cursor: pointer; margin: 0 8px 8px 0; font-size: .95em; }
+.tab.active { background: #b8ff4f; color: #0b0f0b; border-color: #b8ff4f; font-weight: 700; }
+.btn { background: #b8ff4f; color: #0b0f0b; border: none; padding: 11px 20px; border-radius: 9px; cursor: pointer; font-weight: 700; margin: 6px 8px 6px 0; }
+.btn:hover { background: #d0ff70; }
+.btn.small { padding: 6px 12px; font-size: .85em; }
+input, select { width: 100%; max-width: 100%; padding: 10px; background: #1c2a1c; color: #d8ff9a; border: 1px solid #3a4a32; border-radius: 9px; font-size: 1em; }
+label { color: #a8c890; }
+.group { margin-bottom: 14px; max-width: 560px; }
+.warn { color: #ff8a6b; margin: 10px 0; }
+.ok { color: #b8ff4f; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.card { background: #1a2418; padding: 16px; border-radius: 12px; border: 1px solid #2a3a22; }
+.card b { color: #d8ff9a; }
+.total-line { font-size: 1.25em; margin: 12px 0; }
+.total-line b { color: #b8ff4f; text-shadow: 0 0 10px rgba(184,255,79,.35); }
+table { border-collapse: collapse; width: 100%; font-size: .92em; }
+th, td { border: 1px solid #2a3a22; padding: 7px 10px; text-align: left; }
+th { color: #b8ff4f; background: #16220f; }
+a { color: #b8ff4f; }
+.market-btns a { display: inline-block; margin: 3px 6px 3px 0; padding: 4px 10px; background: #22321a; border: 1px solid #3a4a2a; border-radius: 7px; color: #c9ff8a; text-decoration: none; font-size: .82em; }
+.market-btns a:hover { background: #b8ff4f; color: #0b0f0b; }
+ul.parts { list-style: none; padding: 0; }
+ul.parts li { padding: 8px 0; border-bottom: 1px dashed #2a3a22; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+ul.parts li b { color: #d8ff9a; }
+#chatBtn { position: fixed; right: 22px; bottom: 22px; width: 58px; height: 58px; border-radius: 50%; background: #b8ff4f; border: none; font-size: 1.6em; cursor: pointer; box-shadow: 0 0 18px rgba(184,255,79,.4); z-index: 50; }
+#chatPanel { position: fixed; right: 22px; bottom: 90px; width: 340px; max-height: 460px; background: #14201a; border: 1px solid #4a6a3a; border-radius: 14px; display: none; flex-direction: column; z-index: 50; overflow: hidden; }
+#chatPanel.open { display: flex; }
+#chatLog { padding: 12px; overflow-y: auto; flex: 1; min-height: 220px; max-height: 360px; }
+.msg { margin: 6px 0; padding: 8px 12px; border-radius: 10px; font-size: .9em; max-width: 88%; }
+.msg.bot { background: #22331c; }
+.msg.user { background: #b8ff4f; color: #0b0f0b; margin-left: auto; }
+#chatForm { display: flex; padding: 10px; gap: 8px; border-top: 1px solid #2a3a22; }
+#chatIn { flex: 1; }
+iframe#mapFrame { width: 100%; height: 430px; border: 0; border-radius: 10px; margin-top: 12px; }
+.foot { color: #7a9a6a; font-size: .85em; text-align: center; padding: 18px 0 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <div class="logo">PS <span>Helper</span></div>
+  <div class="sub">Конфигуратор ПК · Мастерские по России · 2026</div>
+</div>
+
+<div class="ai-banner">🤖 <b>ИИ помощник поможет вам в вашем вопросе</b> — нажмите кнопку чата в правом нижнем углу. Напишите бюджет цифрой (например, 90000) — сразу соберёт сборку.</div>
+
+<section id="budgetSec">
+  <h2>Подбор по бюджету</h2>
+  <p>Введите сумму (минимум 20 000 ₽) — подберём сбалансированную сборку: сначала самую сильную видеокарту, затем процессор под неё, память, SSD, БП с запасом и корпус.</p>
+  <div class="group"><label>Бюджет, ₽</label><input type="number" id="budgetIn" min="20000" step="1000" value="120000"></div>
+  <button class="btn" onclick="pickByBudget()">Подобрать</button>
+  <div id="budgetMsg" style="margin-top:10px"></div>
+</section>
+
+<section id="presetsSec">
+  <h2>Готовые конфигурации</h2>
+  <div class="grid" id="presetsBox"></div>
+</section>
+
+<section id="configSec">
+  <h2>Конфигуратор</h2>
+  <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(300px,1fr));">
+    <div class="group"><label>Сокет</label><select id="socket" onchange="syncSocket()"></select></div>
+    <div class="group"><label>Процессор</label><select id="cpu" onchange="renderSummary()"></select></div>
+    <div class="group"><label>Видеокарта</label><select id="gpu" onchange="renderSummary()"></select></div>
+    <div class="group"><label>Материнская плата</label><select id="mb" onchange="renderSummary()"></select></div>
+    <div class="group"><label>Оперативная память</label><select id="ram" onchange="renderSummary()"></select></div>
+    <div class="group"><label>SSD-накопитель</label><select id="ssd" onchange="renderSummary()"></select></div>
+    <div class="group"><label>Блок питания</label><select id="psu" onchange="renderSummary()"></select></div>
+    <div class="group"><label>Корпус</label><select id="case" onchange="renderSummary()"></select></div>
+  </div>
+  <div id="configBox"></div>
+  <div class="total-line" id="total"></div>
+  <button class="btn" onclick="saveConfig()">💾 Сохранить сборку</button>
+  <button class="btn" onclick="loadConfig()">📂 Загрузить сборку</button>
+</section>
+
+<section id="linksSec">
+  <h2>🔗 Актуальные ссылки на комплектующие</h2>
+  <p>Поиск по магазинам в один клик — запрос подставляется автоматически.</p>
+  <div id="linksBox" class="market-btns"></div>
+</section>
+
+<section id="servicesSec">
+  <h2>Мастерские по России</h2>
+  <div id="cityList"></div>
+  <iframe id="mapFrame" allowfullscreen title="Карта мастерских"></iframe>
+  <p><a id="mapLink" href="#" target="_blank">Открыть карту в новом окне</a></p>
+  <div id="addrBox" style="margin-top:12px"></div>
+</section>
+
+<div class="foot">PS Helper · Собрано в 2026 году. Цены ориентировочные — проверяйте по кнопкам магазинов.</div>
+</div>
+
+<button id="chatBtn" onclick="toggleChat()" title="ИИ помощник">💬</button>
+<div id="chatPanel">
+  <div id="chatLog"><div class="msg bot">Привет! Я ИИ-помощник PS Helper. Напишите бюджет цифрой — подберу сборку. Или спросите про сокеты, ФПС, БП, память и мастерские.</div></div>
+  <form id="chatForm" onsubmit="return sendChat()"><input id="chatIn" placeholder="Ваш вопрос..." autocomplete="off"><button class="btn small" type="submit">➤</button></form>
+</div>
+
+<script>
+// ============ ДАННЫЕ ============
+const SOCKETS = [
+  {id:'am3p', name:'AMD AM3+', mem:'DDR3'},
+  {id:'am4',  name:'AMD AM4',  mem:'DDR4'},
+  {id:'am5',  name:'AMD AM5',  mem:'DDR5'},
+  {id:'l1151',name:'Intel LGA1151', mem:'DDR4'},
+  {id:'l1200',name:'Intel LGA1200', mem:'DDR4'},
+  {id:'l1700',name:'Intel LGA1700', mem:'DDR4/DDR5'},
+  {id:'l1851',name:'Intel LGA1851', mem:'DDR5'}
+];
+const CPUs = {
+  am3p:[{id:'fx6300',n:'AMD FX-6300 (б/у)',p:3500,y:2012},{id:'fx8350',n:'AMD FX-8350 (б/у)',p:5500,y:2012},{id:'fx9590',n:'AMD FX-9590 (б/у)',p:8000,y:2013}],
+  am4:[{id:'r1200',n:'Ryzen 3 1200',p:3500,y:2017},{id:'r1600',n:'Ryzen 5 1600',p:4500,y:2017},{id:'r2600',n:'Ryzen 5 2600',p:6000,y:2018},{id:'r3600',n:'Ryzen 5 3600',p:9500,y:2019},{id:'r5600',n:'Ryzen 5 5600',p:9500,y:2022},{id:'r5600g',n:'Ryzen 5 5600G (iGPU)',p:11000,y:2021,ig:1},{id:'r5600x',n:'Ryzen 5 5600X',p:13000,y:2020},{id:'r5700x',n:'Ryzen 7 5700X',p:18000,y:2022},{id:'r5800x',n:'Ryzen 7 5800X',p:23000,y:2020},{id:'r5800x3d',n:'Ryzen 7 5800X3D',p:30000,y:2021},{id:'r5900x',n:'Ryzen 9 5900X',p:34000,y:2020},{id:'r5950x',n:'Ryzen 9 5950X',p:46000,y:2020}],
+  am5:[{id:'r7600',n:'Ryzen 5 7600',p:24000,y:2023},{id:'r7600x',n:'Ryzen 5 7600X',p:26000,y:2023},{id:'r7700x',n:'Ryzen 7 7700X',p:34000,y:2023},{id:'r7800x3d',n:'Ryzen 7 7800X3D',p:44000,y:2023},{id:'r9600x',n:'Ryzen 5 9600X',p:28000,y:2024},{id:'r7900x',n:'Ryzen 9 7900X',p:52000,y:2022},{id:'r9700x',n:'Ryzen 7 9700X',p:42000,y:2024},{id:'r9800x3d',n:'Ryzen 7 9800X3D',p:62000,y:2024},{id:'r9900x',n:'Ryzen 9 9900X',p:64000,y:2024},{id:'r7950x',n:'Ryzen 9 7950X',p:95000,y:2022},{id:'r9950x',n:'Ryzen 9 9950X',p:100000,y:2024}],
+  l1151:[{id:'i38100',n:'Core i3-8100 (iGPU)',p:3500,y:2018,ig:1},{id:'i59400f',n:'Core i5-9400F',p:5500,y:2019},{id:'i58400',n:'Core i5-8400 (iGPU)',p:7000,y:2018,ig:1},{id:'i79700f',n:'Core i7-9700F',p:9500,y:2019},{id:'i99900k',n:'Core i9-9900K',p:16000,y:2019}],
+  l1200:[{id:'i310100f',n:'Core i3-10100F',p:4500,y:2020},{id:'i510400f',n:'Core i5-10400F',p:8000,y:2020},{id:'i511400',n:'Core i5-11400 (iGPU)',p:10500,y:2021,ig:1},{id:'i710700f',n:'Core i7-10700F',p:14000,y:2020},{id:'i911900k',n:'Core i9-11900K',p:22000,y:2021}],
+  l1700:[{id:'i312100f',n:'Core i3-12100F',p:6500,y:2022},{id:'i512400f',n:'Core i5-12400F',p:11000,y:2022},{id:'i513400f',n:'Core i5-13400F',p:14300,y:2023},{id:'i713700f',n:'Core i7-13700F',p:25000,y:2023},{id:'i914900k',n:'Core i9-14900K',p:48000,y:2023}],
+  l1851:[{id:'u245k',n:'Core Ultra 5 245K',p:19400,y:2024},{id:'u7265k',n:'Core Ultra 7 265K',p:30000,y:2024},{id:'u9285k',n:'Core Ultra 9 285K',p:55000,y:2024}]
+};
+const MB = {
+  am3p:[{id:'g970',n:'Gigabyte 970A (б/у)',p:3500},{id:'f990fx',n:'ASUS 990FX (б/у)',p:6000}],
+  am4:[{id:'a520',n:'ASUS A520',p:7000},{id:'b450',n:'ASUS B450',p:9000},{id:'b550',n:'ASUS B550',p:13000},{id:'x570',n:'ASUS X570',p:18000}],
+  am5:[{id:'b650',n:'ASUS B650',p:16000},{id:'x670',n:'ASUS X670',p:30000},{id:'x870',n:'ASUS X870',p:35000}],
+  l1151:[{id:'h310',n:'H310',p:4000},{id:'b360',n:'B360',p:5500},{id:'z390',n:'Z390',p:11000}],
+  l1200:[{id:'h410',n:'H410',p:5000},{id:'b460',n:'B460',p:7500},{id:'z490',n:'Z490',p:14000}],
+  l1700:[{id:'h610',n:'H610',p:7500},{id:'b760',n:'B760',p:15000},{id:'z790',n:'Z790',p:28000}],
+  l1851:[{id:'b860',n:'B860',p:22000},{id:'z890',n:'Z890',p:38000}]
+};
+// Актуальные цены (ноябрь 2026, DDR5 в дефиците) — в конфигураторе
+const RAM = {
+  am3p:[{id:'ddr3_8',n:'DDR3 8 ГБ (б/у)',p:1500,gb:8},{id:'ddr3_16',n:'DDR3 16 ГБ (б/у)',p:3000,gb:16}],
+  am4:[{id:'ddr4_8',n:'DDR4 8 ГБ (б/у)',p:2500,gb:8},{id:'ddr4_16',n:'DDR4 16 ГБ 3600',p:8100,gb:16},{id:'ddr4_32',n:'DDR4 32 ГБ 3600',p:15000,gb:32}],
+  am5:[{id:'ddr5_16',n:'DDR5 16 ГБ 6000',p:16300,gb:16},{id:'ddr5_32',n:'DDR5 32 ГБ 6000 CL36',p:34000,gb:32},{id:'ddr5_64',n:'DDR5 64 ГБ 6000',p:175000,gb:64}],
+  l1151:[{id:'ddr4_8',n:'DDR4 8 ГБ (б/у)',p:2500,gb:8},{id:'ddr4_16',n:'DDR4 16 ГБ 3600',p:8100,gb:16}],
+  l1200:[{id:'ddr4_8',n:'DDR4 8 ГБ (б/у)',p:2500,gb:8},{id:'ddr4_16',n:'DDR4 16 ГБ 3600',p:8100,gb:16},{id:'ddr4_32',n:'DDR4 32 ГБ 3600',p:15000,gb:32}],
+  l1700:[{id:'ddr4_16',n:'DDR4 16 ГБ 3600',p:8100,gb:16},{id:'ddr4_32',n:'DDR4 32 ГБ 3600',p:15000,gb:32},{id:'ddr5_32',n:'DDR5 32 ГБ 6000 CL36',p:34000,gb:32},{id:'ddr5_64',n:'DDR5 64 ГБ 6000',p:175000,gb:64}],
+  l1851:[{id:'ddr5_32',n:'DDR5 32 ГБ 6000 CL36',p:34000,gb:32},{id:'ddr5_64',n:'DDR5 64 ГБ 6000',p:175000,gb:64}]
+};
+const SSD = [{id:'ssd_240',n:'SSD 240 ГБ (б/у)',p:1500},{id:'ssd_512',n:'SSD 512 ГБ',p:3500},{id:'ssd_1t',n:'SSD 1 ТБ NVMe',p:6000},{id:'ssd_2t',n:'SSD 2 ТБ NVMe',p:14000},{id:'ssd_4t',n:'SSD 4 ТБ NVMe',p:26000}];
+const PSU = [
+  {id:'pf550',n:'DeepCool PF550 550W',p:3400,w:550},{id:'pf650',n:'DeepCool PF650 650W',p:4200,w:650},
+  {id:'bbs600',n:'Chieftec BBS-600S Gold 600W',p:6450,w:600},{id:'zm750',n:'Zalman ZM750-GV3 750W (12VHPWR)',p:6050,w:750},
+  {id:'pf750x',n:'DeepCool PF750X 750W',p:5800,w:750},{id:'pq750g',n:'DeepCool PQ750G ATX 3.1',p:7900,w:750},
+  {id:'pn750m',n:'DeepCool PN750M ATX 3.0',p:11500,w:750},{id:'tuf750',n:'ASUS TUF 750W Gold',p:10600,w:750},
+  {id:'pn1000m',n:'DeepCool PN1000M ATX 3.1 1000W',p:13800,w:1000},{id:'rm850x',n:'Corsair RM850x',p:17400,w:850},
+  {id:'px1200g',n:'DeepCool PX1200G Platinum 1200W',p:27000,w:1200}
+];
+const CASES = [
+  {id:'m6',n:'ARDOR GAMING Rare M6',p:3500},{id:'n4',n:'ZALMAN N4 Rev.1 RGB',p:4000},{id:'cc560',n:'DEEPCOOL CC560 V2',p:6000},
+  {id:'i4',n:'ZALMAN i4 (6 вентиляторов)',p:6300},{id:'ch560',n:'DEEPCOOL CH560 (E-ATX)',p:9500},{id:'h5',n:'NZXT H5 Flow RGB',p:10000},
+  {id:'northxl',n:'Fractal Design North XL',p:17000},{id:'o11',n:'LIAN LI O11 Dynamic EVO',p:25000},{id:'o11xl',n:'LIAN LI O11 EVO XL (E-ATX)',p:32400}
+];
+// Видеокарты по поколениям 2022–2026: [id, название, цена, ватты, ФПС 1080p/1440p, год]
+const GPUs = [
+  {id:'rx6400',n:'AMD RX 6400 4GB',p:13000,w:53,f:'50/38',y:2022},
+  {id:'rtx3050',n:'NVIDIA RTX 3050 8GB',p:22000,w:130,f:'60/45',y:2022},
+  {id:'a750',n:'Intel Arc A750',p:22000,w:225,f:'75/58',y:2022},
+  {id:'a770',n:'Intel Arc A770 16GB',p:26000,w:225,f:'80/62',y:2022},
+  {id:'rx6600',n:'AMD RX 6600 8GB',p:20000,w:132,f:'95/72',y:2022},
+  {id:'rtx3060',n:'NVIDIA RTX 3060 12GB',p:25000,w:170,f:'85/66',y:2022},
+  {id:'rx6700xt',n:'AMD RX 6700 XT 12GB',p:27000,w:230,f:'115/90',y:2022},
+  {id:'rtx3070',n:'NVIDIA RTX 3070 8GB',p:30000,w:220,f:'110/85',y:2022},
+  {id:'rtx3080',n:'NVIDIA RTX 3080 10GB',p:45000,w:320,f:'140/112',y:2022},
+  {id:'rtx3090',n:'NVIDIA RTX 3090 24GB',p:55000,w:350,f:'145/120',y:2022},
+  {id:'rx7600',n:'AMD RX 7600 8GB',p:28000,w:165,f:'105/82',y:2023},
+  {id:'rtx4060',n:'NVIDIA RTX 4060 8GB',p:30000,w:115,f:'110/86',y:2023},
+  {id:'rx7700xt',n:'AMD RX 7700 XT 12GB',p:45000,w:245,f:'130/102',y:2023},
+  {id:'rtx4070',n:'NVIDIA RTX 4070 12GB',p:55000,w:200,f:'140/110',y:2023},
+  {id:'rx7800xt',n:'AMD RX 7800 XT 16GB',p:58000,w:263,f:'135/107',y:2023},
+  {id:'rx7900xt',n:'AMD RX 7900 XT 20GB',p:75000,w:315,f:'155/124',y:2023},
+  {id:'rx7900xtx',n:'AMD RX 7900 XTX 24GB',p:90000,w:355,f:'165/132',y:2023},
+  {id:'rtx4060ti',n:'NVIDIA RTX 4060 Ti 8GB',p:38000,w:160,f:'125/98',y:2023},
+  {id:'rx7600xt',n:'AMD RX 7600 XT 16GB',p:34000,w:190,f:'120/94',y:2024},
+  {id:'rtx4070s',n:'NVIDIA RTX 4070 Super 12GB',p:60000,w:220,f:'150/119',y:2024},
+  {id:'rtx4080s',n:'NVIDIA RTX 4080 Super 16GB',p:100000,w:320,f:'175/140',y:2024},
+  {id:'rtx4090',n:'NVIDIA RTX 4090 24GB',p:200000,w:450,f:'215/172',y:2024},
+  {id:'rx9060xt',n:'AMD RX 9060 XT 16GB',p:34000,w:160,f:'125/98',y:2025},
+  {id:'rtx5060',n:'NVIDIA RTX 5060 8GB',p:32000,w:145,f:'122/96',y:2025},
+  {id:'rtx5060ti',n:'NVIDIA RTX 5060 Ti 16GB',p:65000,w:180,f:'148/116',y:2025},
+  {id:'rx9070',n:'AMD RX 9070 16GB',p:85000,w:220,f:'162/128',y:2025},
+  {id:'rx9070xt',n:'AMD RX 9070 XT 16GB',p:98000,w:304,f:'178/140',y:2025},
+  {id:'rtx5070',n:'NVIDIA RTX 5070 12GB',p:95000,w:250,f:'168/132',y:2025},
+  {id:'rtx5070ti',n:'NVIDIA RTX 5070 Ti 16GB',p:110000,w:300,f:'185/146',y:2025},
+  {id:'rtx5080',n:'NVIDIA RTX 5080 16GB',p:165000,w:360,f:'198/158',y:2025},
+  {id:'rtx5090',n:'NVIDIA RTX 5090 32GB',p:270000,w:575,f:'245/198',y:2026}
+];
+const PLATFORM_ORDER = ['am5','l1851','l1700','am4','l1200','l1151','am3p'];
+const CPU_RANK = {fx6300:1,fx8350:2,fx9590:3,i38100:4,r1200:5,i59400f:6,r1600:7,r2600:8,i310100f:9,i58400:10,r3600:11,i510400f:12,r5600:13,i511400:14,r2700x:15,r5600x:16,i312100f:17,r5700x:18,i710700f:19,i513400f:20,r5800x:21,i713700f:22,r5600g:23,u245k:24,i911900k:25,r5800x3d:26,r7600:27,r7600x:28,r9600x:29,r7700x:30,r7800x3d:31,r5900x:32,r9700x:33,i914900k:34,r7900x:35,r9800x3d:36,r9900x:37,u7265k:38,r5950x:39,i99900k:40,u9285k:41,r7950x:42,r9950x:43};
+const fmt = n => n.toLocaleString('ru-RU') + ' ₽';
+const mkt = (name, q) => {
+  const t = encodeURIComponent(q || name);
+  return '<a target="_blank" href="https://market.yandex.ru/search?text=' + t + '">Я.Маркет</a>' +
+         '<a target="_blank" href="https://www.dns-shop.ru/search/?q=' + t + '">DNS</a>' +
+         '<a target="_blank" href="https://www.ozon.ru/search/?text=' + t + '">Ozon</a>';
+};
+const find = (arr, id) => arr ? arr.find(x => x.id === id) : null;
+const byId = (obj, id) => obj[id];
+
+// ============ ГОТОВЫЕ КОНФИГУРАЦИИ ============
+const PRESETS = [
+  {name:'🏫 Офис-минимум (≈20 тыс.)', sid:'l1151', cpu:'i38100', gpu:'none', mb:'h310', ram:'ddr4_8', ssd:'ssd_240', psu:'pf550', cs:'m6'},
+  {name:'🎓 Учёба (AMD, iGPU)', sid:'am4', cpu:'r5600g', gpu:'none', mb:'b450', ram:'ddr4_16', ssd:'ssd_512', psu:'pf550', cs:'m6'},
+  {name:'🎓 Учёба (Intel, iGPU)', sid:'l1200', cpu:'i511400', gpu:'none', mb:'b460', ram:'ddr4_16', ssd:'ssd_512', psu:'pf550', cs:'m6'},
+  {name:'🎮 Игровой старт 1080p', sid:'am4', cpu:'r3600', gpu:'rx6600', mb:'b550', ram:'ddr4_16', ssd:'ssd_1t', psu:'pf650', cs:'m6'},
+  {name:'🏆 Киберспорт 144 Гц', sid:'am4', cpu:'r5600', gpu:'rx7600', mb:'b550', ram:'ddr4_32', ssd:'ssd_1t', psu:'zm750', cs:'cc560'},
+  {name:'🚀 Игры 1440p (AM5)', sid:'am5', cpu:'r7600', gpu:'rx7800xt', mb:'b650', ram:'ddr5_32', ssd:'ssd_1t', psu:'pq750g', cs:'ch560'},
+  {name:'🚀 Игры 1440p (Intel)', sid:'l1851', cpu:'u245k', gpu:'rtx5070', mb:'b860', ram:'ddr5_32', ssd:'ssd_1t', psu:'pn750m', cs:'h5'},
+  {name:'👑 Флагман 4K', sid:'am5', cpu:'r9950x', gpu:'rtx5090', mb:'x870', ram:'ddr5_64', ssd:'ssd_4t', psu:'px1200g', cs:'o11xl'}
+];
+function presetTotal(p) {
+  const c = byId(CPUs, p.sid).find(x => x.id === p.cpu);
+  const g = p.gpu === 'none' ? null : find(GPUs, p.gpu);
+  const m = find(MB[p.sid], p.mb);
+  const r = find(RAM[p.sid], p.ram);
+  const s = find(SSD, p.ssd);
+  const ps = find(PSU, p.psu);
+  const cs = find(CASES, p.cs);
+  return (c ? c.p : 0) + (g ? g.p : 0) + m.p + r.p + s.p + ps.p + cs.p;
+}
+function renderPresets() {
+  document.getElementById('presetsBox').innerHTML = PRESETS.map((p, i) => {
+    const g = p.gpu === 'none' ? 'встроенная графика' : find(GPUs, p.gpu).n;
+    const fps = p.gpu !== 'none' ? ' · ФПС ≈ ' + find(GPUs, p.gpu).f : '';
+    return '<div class="card"><b>' + p.name + '</b><br><span style="font-size:.88em">' + g + fps + '</span>' +
+      '<div class="total-line"><b>' + fmt(presetTotal(p)) + '</b></div>' +
+      '<button class="btn small" onclick="loadPreset(' + i + ')">Загрузить в конфигуратор</button></div>';
+  }).join('');
+}
+function loadPreset(i) {
+  const p = PRESETS[i];
+  document.getElementById('socket').value = p.sid;
+  syncSocket();
+  document.getElementById('cpu').value = p.cpu;
+  document.getElementById('gpu').value = p.gpu;
+  document.getElementById('mb').value = p.mb;
+  document.getElementById('ram').value = p.ram;
+  document.getElementById('ssd').value = p.ssd;
+  document.getElementById('psu').value = p.psu;
+  document.getElementById('case').value = p.cs;
+  renderSummary();
+  document.getElementById('configSec').scrollIntoView({behavior:'smooth'});
+}
+
+// ============ КОНФИГУРАТОР ============
+function fillSelect(id, items) {
+  const s = document.getElementById(id);
+  s.innerHTML = items.map(x => '<option value="' + x.id + '">' + x.n + ' — ' + fmt(x.p) + '</option>').join('');
+}
+function initConfig() {
+  const socSel = document.getElementById('socket');
+  socSel.innerHTML = SOCKETS.map(s => '<option value="' + s.id + '">' + s.name + ' (' + s.mem + ')</option>').join('');
+  fillSelect('gpu', [{id:'none', n:'Без видеокарты (нужна iGPU у CPU)', p:0}].concat(GPUs));
+  fillSelect('ssd', SSD);
+  fillSelect('psu', PSU);
+  fillSelect('case', CASES);
+  socSel.value = 'am4';
+  syncSocket();
+}
+function syncSocket() {
+  const sid = document.getElementById('socket').value;
+  fillSelect('cpu', CPUs[sid]);
+  fillSelect('mb', MB[sid]);
+  fillSelect('ram', RAM[sid]);
+  renderSummary();
+}
+function mktRow(name) { return '<div class="market-btns">' + mkt(name) + '</div>'; }
+function renderSummary() {
+  const sid = document.getElementById('socket').value;
+  const c = find(CPUs[sid], document.getElementById('cpu').value);
+  const gv = document.getElementById('gpu').value;
+  const g = gv === 'none' ? null : find(GPUs, gv);
+  const m = find(MB[sid], document.getElementById('mb').value);
+  const r = find(RAM[sid], document.getElementById('ram').value);
+  const s = find(SSD, document.getElementById('ssd').value);
+  const ps = find(PSU, document.getElementById('psu').value);
+  const cs = find(CASES, document.getElementById('case').value);
+  const total = c.p + (g ? g.p : 0) + m.p + r.p + s.p + ps.p + cs.p;
+  let warnings = '';
+  if (sid === 'am3p') warnings += '<div class="warn">⚠️ AM3+ — платформа 2012–2016 годов. Только под б/у-сборку, состояние компонентов проверяйте при покупке.</div>';
+  if (!g && !c.ig) warnings += '<div class="warn">⚠️ У выбранного процессора нет встроенной графики — без видеокарты изображения не будет.</div>';
+  if (g && ps.w < g.w + 150) warnings += '<div class="warn">⚠️ БП слабоват: видеокарте нужно ~' + (g.w + 150) + ' Вт с запасом, у БП — ' + ps.w + ' Вт.</div>';
+  const fps = g ? '<div class="ok">ФПС ≈ ' + g.f + ' (1080p/1440p)</div>' : '';
+  const rows = [
+    ['Процессор', c.n, c.p], (g ? ['Видеокарта', g.n, g.p] : null),
+    ['Материнская плата', m.n, m.p], ['Память', r.n, r.p],
+    ['SSD', s.n, s.p], ['Блок питания', ps.n, ps.p], ['Корпус', cs.n, cs.p]
+  ].filter(Boolean);
+  document.getElementById('configBox').innerHTML =
+    '<h3>Состав сборки</h3><ul class="parts">' +
+    rows.map(x => '<li><span><b>' + x[1] + '</b></span><span><b>' + fmt(x[2]) + '</b>' + mktRow(x[1]) + '</span></li>').join('') +
+    '</ul>' + fps + warnings;
+  document.getElementById('total').innerHTML = '💰 Общая цена компьютера: <b>' + fmt(total) + '</b>';
+  window.curConfig = {sid, cpu:c.id, gpu:gv, mb:m.id, ram:r.id, ssd:s.id, psu:ps.id, cs:cs.id};
+}
+
+// ============ ПОДБОР ПО БЮДЖЕТУ ============
+function buildCandidate(sid, g, c, budget, minGb) {
+  const mbList = MB[sid], ramList = RAM[sid];
+  let ram = ramList.find(x => x.gb >= minGb) || ramList[0];
+  let mb = mbList[0];
+  let ssd = SSD.find(x => x.id === 'ssd_1t');
+  const psus = PSU.filter(p => p.w >= (g ? g.w : 0) + 150);
+  if (!psus.length) return null;
+  let psu = psus.reduce((a, b) => a.p < b.p ? a : b);
+  let cs = CASES[0];
+  const parts = () => c.p + (g ? g.p : 0) + mb.p + ram.p + ssd.p + psu.p + cs.p;
+  if (parts() > budget) {
+    const s240 = SSD.find(x => x.id === 'ssd_240');
+    if (parts() - ssd.p + s240.p <= budget) { ssd = s240; } else return null;
+  }
+  const upgrade = (cur, list) => {
+    let best = cur;
+    for (const o of list) if (o.p > best.p && parts() - best.p + o.p <= budget) best = o;
+    return best;
+  };
+  ssd = upgrade(ssd, SSD);
+  ram = upgrade(ram, ramList);
+  cs = upgrade(cs, CASES);
+  mb = upgrade(mb, mbList);
+  return {sid, gpu:g, cpu:c, mb, ram, ssd, psu, cs, total:parts()};
+}
+function pickByBudget() {
+  const b = Math.round(Number(document.getElementById('budgetIn').value));
+  const msg = document.getElementById('budgetMsg');
+  if (!b || b < 20000) { msg.innerHTML = '<span class="warn">Минимальный бюджет — 20 000 ₽.</span>'; return; }
+  msg.innerHTML = '<span class="ok">Подбираю…</span>';
+  const gpRank = g => g ? GPUs.findIndex(x => x.id === g.id) : -1;
+  const socRank = sid => PLATFORM_ORDER.indexOf(sid);
+  let best = null, bestKey = null;
+  for (const g of [...GPUs].sort((a, b) => b.p - a.p)) {
+    for (const sid of PLATFORM_ORDER) {
+      const list = [...CPUs[sid]].sort((a, b) => b.p - a.p);
+      for (const c of list) {
+        if (g.p > 0) {
+          if (c.p < g.p * 0.15 || c.p > g.p * 2.5) continue;      // баланс ЦП/видеокарта
+          if (g.y - c.y > 7) continue;                             // процессор не сильно старше карты
+        } else if (!c.ig) continue;                                // без видеокарты — только iGPU
+        const cand = buildCandidate(sid, g, c, b, g.p > 0 ? 16 : 8);
+        if (cand) {
+          const key = [gpRank(g), -socRank(sid), CPU_RANK[c.id] || 0];
+          if (!bestKey || key > bestKey) { bestKey = key; best = cand; }
+          break;
+        }
+      }
+      if (best && best.gpu === g) break;
+    }
+    if (best) break;
+  }
+  if (!best) { msg.innerHTML = '<span class="warn">Не удалось собрать в этот бюджет — попробуйте сумму побольше.</span>'; return; }
+  const gname = best.gpu ? best.gpu.n : 'встроенная графика';
+  const fps = best.gpu ? ' · ФПС ≈ ' + best.gpu.f : '';
+  window.lastBuild = best;
+  window.lastBuild = best;
+  msg.innerHTML = '<div class="card"><b>Сборка под ' + fmt(b) + ':</b> ' + gname + ' + ' + best.cpu.n + ' + ' +
+    best.mb.n + ' + ' + best.ram.n + ' + ' + best.ssd.n + ' + ' + best.psu.n + ' + ' + best.cs.n +
+    ' → <b>' + fmt(best.total) + '</b>' + fps +
+    '<br><button class="btn small" onclick="loadLastBuild()">Загрузить в конфигуратор</button></div>';
+}
+function loadLastBuild() {
+  const b = window.lastBuild;
+  if (!b) return;
+  loadBuildObj(b);
+}
+function loadBuildObj(o) {
+  document.getElementById('socket').value = o.sid;
+  syncSocket();
+  document.getElementById('cpu').value = o.cpu.id;
+  document.getElementById('gpu').value = o.gpu ? o.gpu.id : 'none';
+  document.getElementById('mb').value = o.mb.id;
+  document.getElementById('ram').value = o.ram.id;
+  document.getElementById('ssd').value = o.ssd.id;
+  document.getElementById('psu').value = o.psu.id;
+  document.getElementById('case').value = o.cs.id;
+  renderSummary();
+  document.getElementById('configSec').scrollIntoView({behavior:'smooth'});
+}
+
+// ============ ССЫЛКИ ============
+const LINK_CATS = [
+  ['Процессоры AMD','am4 ryzen'],['Процессоры Intel','core i5 12400f'],['Видеокарты NVIDIA','rtx 5070'],
+  ['Видеокарты AMD','rx 7800 xt'],['Материнские платы','b650 материнская плата'],['Оперативная память DDR5','ddr5 32gb 6000'],
+  ['Оперативная память DDR4','ddr4 32gb 3600'],['SSD накопители','ssd nvme 1tb'],['Блоки питания','блок питания 750w gold'],
+  ['Корпуса','корпус mid tower'],['Кулеры','кулер башенный']
+];
+function renderLinks() {
+  document.getElementById('linksBox').innerHTML = LINK_CATS.map(x =>
+    '<div class="card" style="margin-bottom:10px"><b>' + x[0] + ':</b><br>' + mkt(null, x[1]) + '</div>').join('');
+}
+
+// ============ КАРТА МАСТЕРСКИХ ============
+const CITIES = [
+  {n:'Моздок', a:'DNS-сервис, ул. Кирова, 66'},
+  {n:'Владикавказ', a:'ProService, ул. Карла Маркса, 91'},
+  {n:'Москва', a:'Сервисные центры по всему городу'},
+  {n:'Санкт-Петербург', a:'CompMasterSpb, Лесной пр., 69'},
+  {n:'Казань', a:'Сервисы в центре города'},
+  {n:'Екатеринбург', a:'«Апгрейд», ул. Малышева, 107'},
+  {n:'Новосибирск', a:'Komplektoff (ремонт видеокарт)'},
+  {n:'Краснодар', a:'Сервисы в центре города'},
+  {n:'Самара', a:'Сервисы в центре города'}
+];
+let curCity = 'Моздок';
+function showCity(name) {
+  curCity = name;
+  document.querySelectorAll('#cityList .tab').forEach(b => b.classList.toggle('active', b.textContent === name));
+  const q = encodeURIComponent('ремонт компьютеров ' + name);
+  document.getElementById('mapFrame').src = 'https://yandex.ru/map-widget/v1/?mode=search&text=' + q + '&z=12';
+  document.getElementById('mapLink').href = 'https://yandex.ru/maps/?text=' + q + '&z=12';
+  const c = CITIES.find(x => x.n === name);
+  document.getElementById('addrBox').innerHTML = '<b>' + name + '</b>: ' + c.a;
+}
+function renderCities() {
+  document.getElementById('cityList').innerHTML = CITIES.map(c =>
+    '<button class="tab' + (c.n === curCity ? ' active' : '') + '" onclick="showCity(\'' + c.n + '\')">' + c.n + '</button>').join('');
+}
+
+// ============ LOCALSTORAGE ============
+function saveConfig() {
+  if (window.curConfig) {
+    localStorage.setItem('ps_helper_config', JSON.stringify(window.curConfig));
+    alert('Сборка сохранена в браузере.');
+  }
+}
+function loadConfig() {
+  const raw = localStorage.getItem('ps_helper_config');
+  if (!raw) { alert('Сохранённых сборок нет.'); return; }
+  const d = JSON.parse(raw);
+  document.getElementById('socket').value = d.sid;
+  syncSocket();
+  document.getElementById('cpu').value = d.cpu;
+  document.getElementById('gpu').value = d.gpu;
+  document.getElementById('mb').value = d.mb;
+  document.getElementById('ram').value = d.ram;
+  document.getElementById('ssd').value = d.ssd;
+  document.getElementById('psu').value = d.psu;
+  document.getElementById('case').value = d.cs;
+  renderSummary();
+  alert('Сборка загружена.');
+}
+
+// ============ ИИ-ПОМОЩНИК ============
+function toggleChat() { document.getElementById('chatPanel').classList.toggle('open'); }
+function addMsg(text, who) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + who;
+  d.innerHTML = text;
+  document.getElementById('chatLog').appendChild(d);
+  document.getElementById('chatLog').scrollTop = 999999;
+}
+function sendChat() {
+  const inp = document.getElementById('chatIn');
+  const q = inp.value.trim();
+  if (!q) return false;
+  addMsg(q, 'user');
+  inp.value = '';
+  setTimeout(() => addMsg(aiReply(q), 'bot'), 250);
+  return false;
+}
+function aiReply(q) {
+  const s = q.toLowerCase();
+  const num = q.match(/\d[\d\s]{3,7}/);
+  if (num) {
+    const b = Number(num[0].replace(/\s/g, ''));
+    if (b >= 20000) {
+      document.getElementById('budgetIn').value = b;
+      pickByBudget();
+      toggleChat(); document.getElementById('chatPanel').classList.remove('open');
+      return 'Подобрал сборку под ' + fmt(b) + ' — смотрите блок «Подбор по бюджету» выше. Если хочется иначе — напишите другой бюджет.';
+    }
+  }
+  if (s.includes('ам3') || s.includes('am3')) return 'AM3+ — платформа 2012–2016 для FX-процессоров и DDR3. Подходит только для б/у-сборки «на сдачу»: FX-8350 + б/у DDR3 + недорогая видеокарта. Новые комплектующие туда ставить смысла нет.';
+  if (s.includes('ам4') || s.includes('am4')) return 'AM4 — золотая середина: Ryzen 1000–5000, DDR4 (16 ГБ ≈ 8 100 ₽, 32 ГБ ≈ 15 000 ₽). Дешёвая память, огромный выбор б/у плат — лучший сокет для бюджета до 100 тысяч.';
+  if (s.includes('ам5') || s.includes('am5')) return 'AM5 — актуальная платформа AMD: Ryzen 7000/9000 и DDR5. Учтите: DDR5 сейчас в дефиците, 32 ГБ 6000 МГц стоят от ~30 000 ₽. Для 1440p/4K и «на будущее» — лучший выбор.';
+  if (s.includes('интел') || s.includes('intel') || s.includes('lga')) return 'Intel в конфигураторе — LGA1151, LGA1200, LGA1700 и LGA1851 (Core Ultra 200S). Память: DDR4 у старых сокетов, DDR5 у LGA1700 (частично) и LGA1851.';
+  if (s.includes('фпс') || s.includes('fps')) return 'ФПС указан у каждой видеокарты в конфигураторе в формате «1080p/1440p» — усреднённо по современным играм на высоких настройках. Например, RX 6600 ≈ 95/72, RTX 5070 ≈ 168/132, RTX 5090 ≈ 245/198.';
+  if (s.includes('бп') || s.includes('питани') || s.includes('ватт')) return 'Блок питания подбирается с запасом +150 Вт к потреблению видеокарты. Самые надёжные в списке: Corsair RM850x, ASUS TUF 750W Gold, Chieftec BBS-600S Gold, DeepCool PQ/PX (ATX 3.1 — обязательны для RTX 50-серии из-за разъёма 12VHPWR).';
+  if (s.includes('памят') || s.includes('ddr') || s.includes('озу')) return 'Сейчас цены на память в конфигураторе: DDR4 16 ГБ ≈ 8 100 ₽, DDR4 32 ГБ ≈ 15 000 ₽, DDR5 16 ГБ ≈ 16 300 ₽, DDR5 32 ГБ ≈ 34 000 ₽, DDR5 64 ГБ ≈ 175 000 ₽. Тип памяти меняется вместе с сокетом автоматически.';
+  if (s.includes('ssd') || s.includes('накопит')) return 'SSD в конфигураторе: 240 ГБ (б/у, 1 500 ₽), 512 ГБ (3 500 ₽), 1 ТБ NVMe (6 000 ₽), 2 ТБ (14 000 ₽), 4 ТБ (26 000 ₽). Для игр рекомендую от 1 ТБ.';
+  if (s.includes('корпус')) return 'Корпуса: от ARDOR Rare M6 (3 500 ₽) до LIAN LI O11 EVO XL (32 400 ₽, под E-ATX). Для мощных видеокарт (RTX 5080/5090) берите CH560, North XL или O11 — у них хороший продув.';
+  if (s.includes('мастерск') || s.includes('ремонт') || s.includes('карт')) { showCity(curCity); document.getElementById('servicesSec').scrollIntoView({behavior:'smooth'}); return 'Карта мастерских ниже на странице: выберите город — покажу сервисные центры на карте Яндекса.'; }
+  if (s.includes('совместим') || s.includes('подходит')) return 'Совместимость проверяется автоматически: память привязана к сокету, БП — к потреблению видеокарты, а при нехватке iGPU появляется предупреждение. Меняйте компоненты — сводка обновится.';
+  if (s.includes('привет') || s.includes('здравств')) return 'Привет! Напишите бюджет цифрой (например, 90000) — сразу соберу оптимальную сборку. Или спросите про любой компонент.';
+  return 'На этот вопрос у меня нет готового ответа — я помощник по сборке ПК. Попробуйте найти ответ в поиске: <a target="_blank" href="https://yandex.ru/search/?text=' + encodeURIComponent(q) + '">открыть Яндекс</a>';
+}
+
+// ============ СТАРТ ============
+initConfig();
+renderPresets();
+renderLinks();
+renderCities();
+showCity('Моздок');
+renderSummary();
+</script>
+</body>
+</html>
